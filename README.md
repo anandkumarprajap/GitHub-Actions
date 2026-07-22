@@ -6,7 +6,7 @@
 
 To Create a GitHub Actions workflow you need a folder called .github/workflows
 
-# ..........................................................Practice steps...................................................
+.............................Practice steps...................................
 ![Image 1](1.png)
 ![Image 2](2.png)
 ![Image 3](3.png)
