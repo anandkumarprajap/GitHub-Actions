@@ -1,0 +1,28 @@
+# Goal - To ensure my running application is free from OWASP top 10 security issues
+name: OWASP ZAP DAST Scan
+
+on:
+  workflow_call:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+
+      - name: Wait for services to be healthy
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST || vars.EC2_HOST || 'localhost' }}
+        run: |
+          TARGET_HOST="${EC2_HOST:-localhost}"
+          echo "Waiting for service at http://${TARGET_HOST}:8080 to respond..."
+          timeout 60s sh -c "until curl -s http://${TARGET_HOST}:8080 > /dev/null; do sleep 2; done"
+
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: "http://${{ secrets.EC2_HOST || vars.EC2_HOST || 'localhost' }}:8080"
+          fail_action: false
+          allow_issue_writing: false
